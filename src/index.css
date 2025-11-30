@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  /* --- 1. SETUP FONT JAKARTA SANS --- */
+  --font-sans: "Plus Jakarta Sans", "ui-sans-serif", "system-ui", sans-serif;
+
+  /* --- 2. SETUP WARNA CUSTOM (PHARMA) --- */
+  --color-pharma-dark: #102a43;
+  --color-pharma-primary: #008080;
+  --color-pharma-accent: #f06543;
+  --color-pharma-bg: #f0f4f8;
+}
+
+/* --- 3. GLOBAL STYLES --- */
+body {
+  /* Di v4 kita bisa langsung panggil class-nya */
+  background-color: var(--color-pharma-bg);
+  color: #1f2937; /* gray-800 */
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
