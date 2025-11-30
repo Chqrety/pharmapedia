@@ -276,12 +276,12 @@ function FormContent({ form, setForm }) {
         onChange={(e) => setForm({ ...form, kandungan: e.target.value })}
       />
       <FormTextArea
-        label="Manfaat"
+        label="Efek Positif"
         value={form.kegunaan}
         onChange={(e) => setForm({ ...form, kegunaan: e.target.value })}
       />
       <FormTextArea
-        label="Efek Samping"
+        label="Efek Negatif"
         value={form.efek_samping}
         onChange={(e) => setForm({ ...form, efek_samping: e.target.value })}
       />

@@ -170,14 +170,14 @@ function ObatModal({ data, onClose }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
               <div className="flex items-center gap-2 text-emerald-700 font-bold mb-2 text-sm">
-                <Stethoscope size={16} /> Manfaat
+                <Stethoscope size={16} /> Efek Positif
               </div>
               <p className="text-sm text-gray-700 leading-relaxed">{data.kegunaan}</p>
             </div>
 
             <div className="bg-red-50/50 p-4 rounded-xl border border-red-100">
               <div className="flex items-center gap-2 text-red-700 font-bold mb-2 text-sm">
-                <AlertTriangle size={16} /> Efek Samping
+                <AlertTriangle size={16} /> Efek Negatif
               </div>
               <p className="text-sm text-gray-700 leading-relaxed">{data.efek_samping || '-'}</p>
             </div>
