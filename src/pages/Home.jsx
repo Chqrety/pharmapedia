@@ -41,7 +41,7 @@ export default function Home() {
             className="w-full pl-11 pr-4 py-3 text-sm md:text-base rounded-xl md:rounded-full border-2 border-gray-200 focus:border-pharma-primary focus:outline-none shadow-sm transition"
             onChange={(e) => setSearch(e.target.value)}
           />
-          <Search className="absolute left-4 top-3.5 text-gray-400" size={18} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/4 text-gray-400" size={18} />
         </div>
       </div>
 
