@@ -1,60 +1,63 @@
 import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom'
-import { Pill, LogOut } from 'lucide-react'
+import { Pill, LogOut, Home as HomeIcon } from 'lucide-react'
 import Home from './pages/Home'
 import Admin from './pages/Admin'
 import Login from './pages/Login'
 
 // --- KOMPONEN PROTEKSI ADMIN ---
-// Kalau belum login, tendang balik ke /login
 function ProtectedRoute({ children }) {
   const isAuth = localStorage.getItem('isLoggedIn')
   return isAuth ? children : <Navigate to="/login" replace />
 }
 
-// --- KOMPONEN NAVBAR BARU ---
-// Navbar dipisah biar rapi & bisa cek lokasi (untuk sembunyikan navbar di halaman login)
+// --- KOMPONEN NAVBAR ---
 function Navbar() {
   const location = useLocation()
   const isAuth = localStorage.getItem('isLoggedIn')
 
-  // Jangan tampilkan navbar di halaman Login
   if (location.pathname === '/login') return null
 
   const handleLogout = () => {
-    if (confirm('Keluar dari Admin?')) {
+    if (confirm('Yakin ingin keluar?')) {
       localStorage.removeItem('isLoggedIn')
       window.location.href = '/'
     }
   }
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-40 transition-all">
+    <nav className="fixed top-0 w-full z-50 transition-all bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-sm shadow-rose-100/50 supports-backdrop-filter:bg-white/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo Kiri */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="bg-pharma-primary text-white p-1.5 rounded-lg group-hover:rotate-12 transition-transform">
-              <Pill size={24} />
+          {/* Logo Brand */}
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="bg-linear-to-br from-rose-400 to-purple-600 text-white p-2 rounded-xl shadow-lg shadow-rose-200 group-hover:rotate-12 transition-transform duration-300">
+              <Pill size={20} fill="currentColor" className="text-white/90" />
             </div>
-            <span className="text-xl font-bold bg-linear-to-r from-pharma-primary to-teal-600 bg-clip-text text-transparent tracking-tight">
+            <span className="text-xl font-black bg-linear-to-r from-rose-500 to-purple-600 bg-clip-text text-transparent tracking-tight">
               Pharmapedia
             </span>
           </Link>
 
           {/* Menu Kanan */}
-          <div className="flex items-center gap-4">
-            {/* Tombol Home selalu ada */}
-            <Link to="/" className="text-gray-500 hover:text-pharma-primary font-medium text-sm transition">
-              Beranda
+          <div className="flex items-center gap-3">
+            <Link
+              to="/"
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200
+                ${
+                  location.pathname === '/'
+                    ? 'bg-rose-50 text-rose-600 shadow-inner'
+                    : 'text-gray-500 hover:bg-white hover:text-rose-500 hover:shadow-sm'
+                }`}
+            >
+              <HomeIcon size={16} /> <span className="hidden sm:inline">Beranda</span>
             </Link>
 
-            {/* Tombol Logout HANYA MUNCUL jika di halaman Admin */}
             {location.pathname === '/admin' && isAuth && (
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 text-red-500 hover:text-red-700 font-medium text-sm bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-full transition"
+                className="flex items-center gap-2 bg-white border border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500 hover:shadow-lg hover:shadow-rose-200 px-4 py-2 rounded-full text-sm font-bold transition-all duration-300"
               >
-                <LogOut size={16} /> Logout
+                <LogOut size={16} /> <span className="hidden sm:inline">Logout</span>
               </button>
             )}
           </div>
@@ -64,32 +67,61 @@ function Navbar() {
   )
 }
 
+// --- KOMPONEN FOOTER BARU (Biar bisa disembunyikan) ---
+function Footer() {
+  const location = useLocation()
+
+  // LOGIKA PENTING: Sembunyikan Footer jika di halaman Login
+  if (location.pathname === '/login') return null
+
+  return (
+    <footer className="mt-auto border-t border-white/50 bg-white/40 backdrop-blur-sm">
+      <div className="max-w-7xl mx-auto py-8 px-4 text-center">
+        <p className="text-xs font-semibold text-gray-400 tracking-wide">
+          © 2025 PHARMAPEDIA • SAHABAT SEHAT ANAK KOST
+        </p>
+      </div>
+    </footer>
+  )
+}
+
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col font-sans bg-pharma-bg">
+      <div className="min-h-screen flex flex-col font-sans bg-slate-50 text-slate-800">
         <Navbar />
 
-        <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8">
+        {/* Layout Wrapper */}
+        <div className="flex-1 w-full">
           <Routes>
-            {/* Rute Publik */}
-            <Route path="/" element={<Home />} />
+            <Route
+              path="/"
+              element={
+                // Bungkus Home dengan padding-top karena ada Navbar fixed
+                <div className="pt-20 px-3">
+                  <Home />
+                </div>
+              }
+            />
+
+            {/* Login TIDAK dikasih padding-top biar full screen center */}
             <Route path="/login" element={<Login />} />
 
-            {/* Rute Rahasia (Diproteksi) */}
             <Route
               path="/admin"
               element={
                 <ProtectedRoute>
-                  <Admin />
+                  {/* Admin dikasih padding-top */}
+                  <div className=" mx-auto">
+                    <Admin />
+                  </div>
                 </ProtectedRoute>
               }
             />
           </Routes>
-        </main>
+        </div>
 
-        {/* Footer simple */}
-        <footer className="text-center py-8 text-gray-400 text-xs">© 2025 Pharmapedia. Database Obat Digital.</footer>
+        <Footer />
       </div>
     </Router>
   )

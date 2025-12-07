@@ -1,6 +1,17 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
-import { Search, Info, X, Pill, AlertTriangle, Stethoscope, Thermometer } from 'lucide-react'
+import {
+  Search,
+  Info,
+  X,
+  Pill,
+  AlertTriangle,
+  Stethoscope,
+  Thermometer,
+  Sparkles,
+  Activity,
+  Droplets,
+} from 'lucide-react'
 
 export default function Home() {
   const [obat, setObat] = useState([])
@@ -9,10 +20,10 @@ export default function Home() {
   const [selectedObat, setSelectedObat] = useState(null)
 
   useEffect(() => {
-    fetchObat()
+    fetchData()
   }, [])
 
-  async function fetchObat() {
+  async function fetchData() {
     const { data } = await supabase.from('obat').select('*')
     setObat(data || [])
     setLoading(false)
@@ -25,37 +36,53 @@ export default function Home() {
   )
 
   return (
-    <div className="space-y-6 md:space-y-8 pb-10 px-2 md:px-0">
-      {/* --- RESPONSIVE HEADER --- */}
-      <div className="text-center py-8 md:py-12 space-y-3 md:space-y-4 bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-100 px-4 md:p-8">
-        {/* Font size mengecil di mobile (text-2xl) membesar di desktop (text-3xl) */}
-        <h2 className="text-2xl md:text-3xl font-extrabold text-pharma-dark tracking-tight">Kamus Obat Digital</h2>
-        <p className="text-sm md:text-base text-gray-500 max-w-2xl mx-auto">
-          Cari obat, cek dosis, dan pantau efek sampingnya dalam hitungan detik.
-        </p>
+    // BACKGROUND: Nuansa Peach/Pink lembut ala referensi
+    <div className="min-h-screen -m-4 sm:-m-6 lg:-m-8 p-4 sm:p-6 lg:p-8 bg-[#FFF5F5] font-sans text-gray-800 relative overflow-hidden">
+      {/* BACKGROUND DECORATION (Blobs Abstrak) */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-rose-200/40 rounded-full mix-blend-multiply filter blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+      <div className="absolute top-40 left-0 w-[300px] h-[300px] bg-purple-200/40 rounded-full mix-blend-multiply filter blur-[60px] -translate-x-1/2 pointer-events-none"></div>
+      <div className="absolute bottom-0 right-20 w-[400px] h-[400px] bg-orange-100/60 rounded-full mix-blend-multiply filter blur-[60px] translate-y-1/3 pointer-events-none"></div>
 
-        <div className="relative max-w-lg mx-auto pt-2">
-          <input
-            type="text"
-            placeholder="Cari nama obat (e.g., Paracetamol)..."
-            className="w-full pl-11 pr-4 py-3 text-sm md:text-base rounded-xl md:rounded-full border-2 border-gray-200 focus:border-pharma-primary focus:outline-none shadow-sm transition"
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/4 text-gray-400" size={18} />
+      <div className="max-w-7xl mx-auto space-y-8 pb-12 relative z-10">
+        {/* --- HEADER --- */}
+        {/* Style dibuat mirip referensi: Putih bersih, rounded besar, shadow halus */}
+        <div className="text-center py-12 px-6 bg-white/80 backdrop-blur-md rounded-[2.5rem] shadow-xl shadow-rose-900/5 border border-white">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-50 text-rose-500 text-xs font-bold uppercase tracking-widest mb-4">
+            <Sparkles size={14} /> Digital Pharmacy
+          </div>
+
+          <h2 className="text-3xl md:text-5xl font-black text-slate-800 tracking-tight mb-3">
+            Kamus Obat <span className="text-rose-500">Digital</span>
+          </h2>
+          <p className="text-gray-500 max-w-xl mx-auto text-sm md:text-base font-medium leading-relaxed">
+            Cari obat, periksa dosis, dan pantau efek samping dalam hitungan detik.
+          </p>
+
+          {/* Search Bar ala Referensi */}
+          <div className="relative max-w-lg mx-auto mt-8">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-rose-400">
+              <Search size={24} />
+            </div>
+            <input
+              type="text"
+              placeholder="Cari nama obat (misal: Paracetamol)..."
+              className="w-full py-4 pl-14 pr-6 bg-white border-2 border-rose-100 rounded-2xl focus:outline-none focus:border-rose-400 focus:ring-4 focus:ring-rose-100 transition-all text-gray-700 placeholder-gray-400 font-medium shadow-sm"
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
         </div>
+
+        {/* --- GRID OBAT --- */}
+        {loading ? (
+          <div className="text-center py-20 text-rose-400 font-bold animate-pulse">Sedang memuat database...</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filtered.map((item) => (
+              <ObatCard key={item.id} data={item} onClick={() => setSelectedObat(item)} />
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* --- RESPONSIVE GRID --- */}
-      {/* Mobile: 1 kolom, Tablet: 2 kolom, Desktop: 3 kolom, Layar Lebar: 4 kolom */}
-      {loading ? (
-        <div className="text-center py-20 text-gray-400 animate-pulse">Sedang memuat database...</div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
-          {filtered.map((item) => (
-            <ObatCard key={item.id} data={item} onClick={() => setSelectedObat(item)} />
-          ))}
-        </div>
-      )}
 
       {/* Modal Detail */}
       {selectedObat && <ObatModal data={selectedObat} onClose={() => setSelectedObat(null)} />}
@@ -63,149 +90,145 @@ export default function Home() {
   )
 }
 
-// --- CARD COMPONENT ---
+// --- CARD STYLE BARU (Mirip Referensi Client) ---
 function ObatCard({ data, onClick }) {
-  const getColorScheme = (simbol) => {
+  // Logic warna background card (Pastel soft)
+  const getTheme = (simbol) => {
     const s = simbol?.toLowerCase() || ''
     if (s.includes('merah'))
       return {
-        bg: 'bg-red-50/80',
-        border: 'border-red-100',
-        text: 'text-red-800',
-        icon: 'bg-red-100 text-red-600',
-        hover: 'group-hover:border-red-300',
+        bg: 'bg-rose-50',
+        border: 'border-rose-100',
+        iconBg: 'bg-rose-200',
+        text: 'text-rose-700',
+        icon: <AlertTriangle size={32} className="text-rose-600" />,
       }
     if (s.includes('biru'))
       return {
-        bg: 'bg-blue-50/80',
+        bg: 'bg-blue-50',
         border: 'border-blue-100',
-        text: 'text-blue-800',
-        icon: 'bg-blue-100 text-blue-600',
-        hover: 'group-hover:border-blue-300',
+        iconBg: 'bg-blue-200',
+        text: 'text-blue-700',
+        icon: <Activity size={32} className="text-blue-600" />,
       }
     return {
-      bg: 'bg-emerald-50/80',
+      bg: 'bg-emerald-50',
       border: 'border-emerald-100',
-      text: 'text-emerald-800',
-      icon: 'bg-emerald-100 text-emerald-600',
-      hover: 'group-hover:border-emerald-300',
+      iconBg: 'bg-emerald-200',
+      text: 'text-emerald-700',
+      icon: <Droplets size={32} className="text-emerald-600" />,
     }
   }
 
-  const theme = getColorScheme(data.simbol)
+  const theme = getTheme(data.simbol)
 
   return (
     <div
-      className={`relative rounded-xl md:rounded-2xl border-2 ${theme.bg} ${theme.border} ${theme.hover} transition-all duration-200 cursor-pointer group active:scale-[0.98] hover:-translate-y-1 hover:shadow-md flex flex-col h-full`}
       onClick={onClick}
+      className={`relative group p-6 rounded-4xl border ${theme.border} ${theme.bg} hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden`}
     >
-      <div className={`absolute top-3 right-3 p-1.5 md:p-2 rounded-full ${theme.icon} shadow-sm`}>
-        <Info size={16} strokeWidth={2.5} />
-      </div>
+      {/* Dekorasi Background Card (Lingkaran Pudar) */}
+      <div
+        className={`absolute -right-6 -top-6 w-24 h-24 rounded-full ${theme.iconBg} opacity-20 group-hover:scale-150 transition-transform duration-500`}
+      ></div>
 
-      <div className="p-4 md:p-5 flex flex-col h-full">
-        <div className="pr-8 mb-3">
-          <span className={`text-[10px] font-bold uppercase tracking-wider ${theme.text} opacity-70`}>
+      <div className="flex justify-between items-start relative z-10">
+        <div className="flex-1 pr-4">
+          <span
+            className={`text-[10px] font-bold uppercase tracking-wider ${theme.text} bg-white/60 px-2 py-1 rounded-lg`}
+          >
             {data.golongan || 'Umum'}
           </span>
-          {/* Judul responsif biar ga kepotong di HP kecil */}
-          <h3 className={`text-lg md:text-xl font-extrabold ${theme.text} leading-tight mt-1`}>{data.nama}</h3>
+          <h3 className="text-xl font-black text-gray-800 mt-2 mb-1 leading-tight group-hover:text-rose-600 transition-colors">
+            {data.nama}
+          </h3>
+
+          <div className="mt-4">
+            <p className="text-[10px] font-bold text-gray-400 uppercase mb-0.5">Kandungan</p>
+            <p className="text-sm font-medium text-gray-600 line-clamp-2 leading-snug">{data.kandungan || '-'}</p>
+          </div>
         </div>
 
-        <div className="mt-auto pt-3 border-t border-black/5">
-          <p className="text-[10px] md:text-xs text-gray-500 font-medium mb-1">Kandungan Utama:</p>
-          <p className="text-xs md:text-sm font-semibold text-gray-700 line-clamp-2">{data.kandungan || '-'}</p>
+        {/* ICON BESAR DI KANAN (Imitasi Gambar 3D) */}
+        <div
+          className={`w-16 h-16 rounded-2xl ${theme.iconBg} flex items-center justify-center shadow-inner mt-2 group-hover:rotate-12 transition-transform duration-300`}
+        >
+          {theme.icon}
+        </div>
+      </div>
+
+      {/* Tombol Info Kecil */}
+      <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="bg-white p-2 rounded-full shadow-sm text-gray-400">
+          <Info size={16} />
         </div>
       </div>
     </div>
   )
 }
 
-// --- MODAL RESPONSIVE ---
+// --- MODAL (Tetap sama tapi disesuaikan dikit warnanya) ---
 function ObatModal({ data, onClose }) {
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) onClose()
-  }
-
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-pharma-dark/60 backdrop-blur-sm p-0 md:p-4 animate-in fade-in duration-200"
-      onClick={handleBackdropClick}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/30 backdrop-blur-sm animate-in fade-in"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      {/* RESPONSIVE MODAL CONTAINER:
-         - Mobile: Full width bottom sheet (rounded-t-2xl), max-h-[85vh]
-         - Desktop: Center modal (rounded-2xl), max-w-2xl
-      */}
-      <div className="bg-white w-full md:max-w-2xl max-h-[85vh] md:max-h-[90vh] rounded-t-2xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-10 md:zoom-in-95 duration-200">
-        {/* Header Sticky */}
-        <div className="bg-white border-b p-4 md:p-5 flex justify-between items-start sticky top-0 z-10">
+      <div className="bg-white w-full max-w-2xl max-h-[90vh] rounded-4xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95">
+        <div className="bg-white p-6 border-b border-gray-100 flex justify-between items-start sticky top-0 z-10">
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-gray-800">{data.nama}</h2>
-            <div className="flex flex-wrap gap-2 mt-2">
-              <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] md:text-xs font-bold uppercase">
+            <h2 className="text-2xl md:text-3xl font-black text-gray-800">{data.nama}</h2>
+            <div className="flex gap-2 mt-2">
+              <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-gray-100 text-gray-600">
                 {data.golongan}
               </span>
               <span
-                className={`px-2 py-0.5 rounded text-[10px] md:text-xs font-bold uppercase border
-                ${
+                className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
                   data.simbol?.includes('Merah')
-                    ? 'text-red-600 border-red-200 bg-red-50'
+                    ? 'bg-rose-100 text-rose-600'
                     : data.simbol?.includes('Biru')
-                    ? 'text-blue-600 border-blue-200 bg-blue-50'
-                    : 'text-emerald-600 border-emerald-200 bg-emerald-50'
+                    ? 'bg-blue-100 text-blue-600'
+                    : 'bg-emerald-100 text-emerald-600'
                 }`}
               >
                 {data.simbol}
               </span>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition">
-            <X size={20} className="text-gray-500" />
+          <button
+            onClick={onClose}
+            className="p-2 bg-gray-100 hover:bg-rose-100 hover:text-rose-600 rounded-full transition-colors"
+          >
+            <X size={24} />
           </button>
         </div>
 
-        {/* Content Scrollable */}
-        <div className="p-4 md:p-6 overflow-y-auto space-y-6 bg-white">
-          {/* Grid stack di mobile, side-by-side di desktop */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
-              <div className="flex items-center gap-2 text-emerald-700 font-bold mb-2 text-sm">
-                <Stethoscope size={16} /> Efek Positif
+        <div className="p-6 overflow-y-auto space-y-6">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-emerald-50 border border-emerald-100 p-5 rounded-2xl">
+              <div className="flex items-center gap-2 text-emerald-600 font-black text-sm uppercase mb-2">
+                <Sparkles size={18} /> Efek Positif
               </div>
-              <p className="text-sm text-gray-700 leading-relaxed">{data.kegunaan}</p>
+              <p className="text-gray-700 text-sm font-medium">{data.kegunaan}</p>
             </div>
-
-            <div className="bg-red-50/50 p-4 rounded-xl border border-red-100">
-              <div className="flex items-center gap-2 text-red-700 font-bold mb-2 text-sm">
-                <AlertTriangle size={16} /> Efek Negatif
+            <div className="bg-rose-50 border border-rose-100 p-5 rounded-2xl">
+              <div className="flex items-center gap-2 text-rose-600 font-black text-sm uppercase mb-2">
+                <AlertTriangle size={18} /> Efek Negatif
               </div>
-              <p className="text-sm text-gray-700 leading-relaxed">{data.efek_samping || '-'}</p>
+              <p className="text-gray-700 text-sm font-medium">{data.efek_samping || '-'}</p>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <InfoItem label="Kandungan" value={data.kandungan} icon={<Pill size={16} />} />
-            <InfoItem label="Dosis Dewasa" value={data.dosis_dewasa} icon={<Thermometer size={16} />} />
-            <InfoItem label="Dosis Anak" value={data.dosis_anak} />
-            <InfoItem label="Aturan Pakai" value={data.waktu_konsumsi} />
+          <div className="space-y-4 bg-gray-50 p-5 rounded-2xl border border-gray-100">
+            <DetailRow label="Kandungan" value={data.kandungan} icon={<Pill size={16} />} />
+            <DetailRow label="Dosis Dewasa" value={data.dosis_dewasa} icon={<Thermometer size={16} />} />
+            <DetailRow label="Dosis Anak" value={data.dosis_anak} />
+            <DetailRow label="Waktu Konsumsi" value={data.waktu_konsumsi} />
+          </div>
 
-            <div className="bg-blue-50 p-4 rounded-xl border-l-4 border-blue-400 mt-4">
-              <h4 className="font-bold text-blue-800 text-xs uppercase mb-1">⚠️ Interaksi Obat</h4>
-              <p className="text-sm text-blue-900">{data.interaksi || 'Tidak ada data interaksi.'}</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-500 pt-4 border-t">
-              <div>
-                <strong className="text-gray-700">Penyimpanan:</strong>
-                <br />
-                {data.aturan_penyimpanan || '-'}
-              </div>
-              <div>
-                <strong className="text-gray-700">Pembuangan:</strong>
-                <br />
-                {data.pembuangan || '-'}
-              </div>
-            </div>
+          <div className="bg-indigo-50 border border-indigo-100 p-5 rounded-2xl">
+            <h4 className="font-bold text-indigo-700 text-xs uppercase mb-1">⚠️ Interaksi Obat</h4>
+            <p className="text-sm text-indigo-900 font-medium">{data.interaksi || 'Tidak ada data.'}</p>
           </div>
         </div>
       </div>
@@ -213,14 +236,14 @@ function ObatModal({ data, onClose }) {
   )
 }
 
-function InfoItem({ label, value, icon }) {
+function DetailRow({ label, value, icon }) {
   if (!value || value === '-') return null
   return (
-    <div className="border-b border-gray-100 pb-2 last:border-0">
-      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide flex items-center gap-1 mb-1">
+    <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 border-b border-gray-200 last:border-0 pb-2 last:pb-0">
+      <span className="text-xs font-bold text-gray-400 uppercase w-32 flex items-center gap-1 shrink-0">
         {icon} {label}
       </span>
-      <p className="text-gray-800 font-medium text-sm">{value}</p>
+      <span className="text-sm font-semibold text-gray-700">{value}</span>
     </div>
   )
 }
